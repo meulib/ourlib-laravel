@@ -17,4 +17,6 @@ Route::get('/', function()
 	return View::make('home');
 });
 
-Route::get('/browse', 'BookController@showIndex');
+Route::get('/browse', 'BookController@showAll');
+
+Route::get('/book/{id?}', 'BookController@showSingle');
