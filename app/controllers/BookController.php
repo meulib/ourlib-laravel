@@ -17,7 +17,9 @@ class BookController extends BaseController
         }
         else
         {
-	        return "rcid $bookId";
+            $book = FlatBook::find($bookId);
+            $copies = BookCopy::where('BookID', '=', $book->ID)->get();
+            return View::make("book",array('book' => $book, 'copies' => $copies));
 	    }
     }
 }
