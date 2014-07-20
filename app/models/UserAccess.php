@@ -25,11 +25,23 @@
 
 //}
 
-class User extends Eloquent {
+class UserAccess extends Eloquent {
 
-	protected $table = 'users';
+	protected $table = 'user_access';
 	protected $primaryKey = 'UserID';
 
+	public static function Login($userNameEmail, $pwd)
+	{
+		$user = NULL;
+
+		// user can login with username or email
+		if (filter_var($userNameEmail, FILTER_VALIDATE_EMAIL)) // given value is email
+			$user = self::where('EMail','=',$userNameEmail)->first();
+		else
+			$user = self::where('Username','=',$userNameEmail)->first();
+
+		var_dump($user);
+	}
 }
 
 ?>
