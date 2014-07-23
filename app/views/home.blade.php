@@ -2,7 +2,7 @@
 
 @section('content')
 	@if (Session::has('loggedInUser'))
-		ok
+	
 	@else
 		{{ Form::open(array('action' => 'UserController@login')) }}
 			{{ Form::label('user_name', 'Username'); }}
