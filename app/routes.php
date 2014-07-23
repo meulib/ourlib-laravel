@@ -22,3 +22,5 @@ Route::get('/browse', 'BookController@showAll');
 Route::get('/book/{id?}', 'BookController@showSingle');
 
 Route::post('login', 'UserController@login');
+
+Route::get('logout', 'UserController@logout');

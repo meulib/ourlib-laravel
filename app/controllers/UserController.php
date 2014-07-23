@@ -46,5 +46,11 @@ class UserController extends BaseController
             echo $e->getMessage();
         }
     }
+
+    public function logout()
+    {
+        Session::flush();
+        return Redirect::to(URL::previous());
+    }
 }
 ?>
