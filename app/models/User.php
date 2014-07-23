@@ -29,7 +29,7 @@ class User extends Eloquent {
 
 	protected $table = 'users';
 	protected $primaryKey = 'UserID';
-	
+
 }
 
 ?>
