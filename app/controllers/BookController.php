@@ -23,16 +23,16 @@ class BookController extends BaseController
 	    }
     }
 
-    public function requestBook($bCopyId = null)
+    public function request($bCopyId = null)
     {
-        if ($bCopyId == null)
+        /*if ($bCopyId == null)
         {
             return Redirect::to(URL::previous());
         }
         else
         {
 
-        }
+        }*/
     }
 }
 ?>
