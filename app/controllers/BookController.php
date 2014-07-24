@@ -22,5 +22,17 @@ class BookController extends BaseController
             return View::make("book",array('book' => $book, 'copies' => $copies));
 	    }
     }
+
+    public function requestBook($bCopyId = null)
+    {
+        if ($bCopyId == null)
+        {
+            return Redirect::to(URL::previous());
+        }
+        else
+        {
+
+        }
+    }
 }
 ?>
