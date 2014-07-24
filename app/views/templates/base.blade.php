@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     @section('htmlHead')
+        {{ HTML::script('js/ourlib.js'); }}
     	<title>{{Config::get('app.name')}}</title>
     @show
 </head>

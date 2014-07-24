@@ -32,7 +32,8 @@
 		@endif
 		{{{$bCopy->Owner->City.', '.$bCopy->Owner->Locality}}}<br/>
 		@if ($loggedIn)
-			<a href={{{URL::to('request', array($bCopy->ID))}}}>Request Book</a>
+			<?php $onclick = "showDiv('requestBook".$bCopy->ID."')"; ?>
+			{{ HTML::link('#','Request Book', ['onclick'=>$onclick]); }}
 			@include('templates.requestBookForm')
 		@endif
 	@endforeach
