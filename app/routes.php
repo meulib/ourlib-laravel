@@ -25,4 +25,4 @@ Route::post('login', 'UserController@login');
 
 Route::get('logout', 'UserController@logout');
 
-Route::post('request', 'BookController@request');
+Route::post('request', 'TransactionController@request');
