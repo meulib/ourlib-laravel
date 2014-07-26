@@ -1,5 +1,7 @@
 <?php
 
+require 'constants.php';
+
 /*
 |--------------------------------------------------------------------------
 | Register The Laravel Class Loader
