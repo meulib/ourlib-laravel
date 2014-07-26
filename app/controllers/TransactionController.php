@@ -11,7 +11,8 @@ class TransactionController extends BaseController
         $userID = Session::get('loggedInUser')->UserID;
         $bookCopyID = Input::get('bookCopyID');
         $msg = Input::get('requestMessage');
-        Transaction::request($userID,$bookCopyID,$msg);
+        $tranID = Transaction::request($userID,$bookCopyID,$msg);
+        echo $tranID;
     }
 }
 ?>
