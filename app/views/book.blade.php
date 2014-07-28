@@ -8,10 +8,21 @@
 	$title = $book->Title;
 	if ($book->SubTitle)
 		$title .= ': '.$book->SubTitle;
+	$tMsg = ["",""];
+	if (Session::has('TransactionMessage'))
+	{
+		$tMsg = Session::get('TransactionMessage');
+		if ($tMsg[0] == 'RequestBook')
+		{
+			Session::forget('TransactionMessage');	
+		}
+	}
 ?>
 
-<ul>
 @section('content')
+@if ($tMsg[1]!="")
+	<p align='center'><span style="border:2px solid blue;padding:4px;background-color:LemonChiffon">{{{$tMsg[1]}}}</span></p>
+@endif
 	<b>{{{$title}}}</b><br/>
 	@if ($book->Author1)
 		{{{ $book->Author1 }}}
@@ -38,4 +49,4 @@
 		@endif
 	@endforeach
 @stop
-</ul>
+
