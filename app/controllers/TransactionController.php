@@ -27,5 +27,20 @@ class TransactionController extends BaseController
 
         return Redirect::to(URL::previous());
     }
+
+    public function messages()
+    {
+        $loggedIn = false;
+        if (!Session::has('loggedInUser'))
+            return Redirect::to(URL::previous());
+
+        $userID = Session::get('loggedInUser')->UserID;
+
+        $msgTransactions = Transaction::openMsgTransactions($userID);
+
+        return View::make("messages",array('msgTransactions' => $msgTransactions);
+        //var_dump($result);
+
+    }
 }
 ?>

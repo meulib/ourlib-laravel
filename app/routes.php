@@ -26,3 +26,5 @@ Route::post('login', 'UserController@login');
 Route::get('logout', 'UserController@logout');
 
 Route::post('request', 'TransactionController@request');
+
+Route::get('/messages', 'TransactionController@messages');

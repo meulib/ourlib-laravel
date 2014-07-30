@@ -14,7 +14,8 @@
     @section('appLinks')
         <a href={{URL::to('/browse')}}>Browse Collection</a> | 
         @if (Session::has('loggedInUser'))
-            Messages | My Books | My Borrowed Books
+            {{HTML::link(URL::to('/messages'), 'Messages')}}
+             | My Books | My Borrowed Books
         @else
             Join
         @endif
