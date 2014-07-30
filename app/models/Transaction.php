@@ -5,6 +5,21 @@ class Transaction extends Eloquent {
 	protected $table = 'transactions_active';
 	protected $primaryKey = 'ID';
 
+	public function Lender()
+	{
+		return $this->hasOne('User', 'UserID', 'Lender');
+	}
+
+	public function Borrower()
+	{
+		return $this->hasOne('User', 'UserID', 'Borrower');
+	}
+
+	public function Book()
+	{
+		return $this->hasOne('FlatBook', 'ID', 'ItemID');
+	}	
+
 	public static function request($borrowerID, $itemCopyID, $msg)
 	{
 		$iCopy = BookCopy::findOrFail($itemCopyID);
@@ -45,6 +60,7 @@ class Transaction extends Eloquent {
 			$userM->OtherUserID = $ownerID;
 			$userM->TransactionID = $tranID;
 			$userM->Message = $msg;
+			$userM->ReadFlag = 1;
 			$userM->save();
 
 			$userM = new UserMessage;
@@ -63,6 +79,20 @@ class Transaction extends Eloquent {
 		}				
 		DB::commit();
 		return $tranID;
+	}
+
+	public static function openMsgTransactions($userID)
+	{
+		$tranIDs = DB::table('messages2')
+					->select('TransactionID')
+					->distinct()
+					->where('UserID', '=', $userID)
+					->where('ReadFlag', '=', 0)
+					->lists('TransactionID');
+
+		$trans = Transaction::whereIn('ID',$tranIDs)->with('Lender','Borrower','Book')->get();
+
+		return $trans;
 	}
 }
 
