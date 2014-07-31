@@ -5,12 +5,12 @@ class Transaction extends Eloquent {
 	protected $table = 'transactions_active';
 	protected $primaryKey = 'ID';
 
-	public function Lender()
+	public function LenderUser()
 	{
 		return $this->hasOne('User', 'UserID', 'Lender');
 	}
 
-	public function Borrower()
+	public function BorrowerUser()
 	{
 		return $this->hasOne('User', 'UserID', 'Borrower');
 	}
@@ -36,13 +36,13 @@ class Transaction extends Eloquent {
 			$tran->Lender = $ownerID;
 			$tran->ItemCopyID = $itemCopyID;
 			$tran->ItemID = $itemID;
-			$tran->Status = TRANSACTION_STATUS_REQUESTED;
+			$tran->Status = self::tStatusByKey('T_STATUS_REQUESTED');
 			$tran->save();
 			$tranID = $tran->ID;
 
 			$tranH = new TransactionHistory;
 			$tranH->TransactionID = $tranID;
-			$tranH->Status = TRANSACTION_STATUS_REQUESTED;
+			$tranH->Status = self::tStatusByKey('T_STATUS_REQUESTED');
 			$tranH->save();
 
 			$tranM = new TransactionMessage;
@@ -83,6 +83,7 @@ class Transaction extends Eloquent {
 
 	public static function openMsgTransactions($userID)
 	{
+		// unread messages
 		$tranIDs = DB::table('messages2')
 					->select('TransactionID')
 					->distinct()
@@ -90,9 +91,65 @@ class Transaction extends Eloquent {
 					->where('ReadFlag', '=', 0)
 					->lists('TransactionID');
 
-		$trans = Transaction::whereIn('ID',$tranIDs)->with('Lender','Borrower','Book')->get();
+		// transaction details for unread messages
+		$trans = Transaction::whereIn('ID',$tranIDs)
+					->with('LenderUser','BorrowerUser','Book')
+					->get();
 
 		return $trans;
+	}
+
+	public static function tMessages($tranID,$userID)
+	{
+		$msgs = UserMessage::where('TransactionID', '=', $tranID)
+						->where('UserID','=',$userID)
+						->with('User','OtherUser')
+						->get();
+		return $msgs;
+	}
+
+	public static function tStatusByVal($sVal)
+	{
+		switch ($sVal) 
+		{
+			case 1:
+				return 'T_STATUS_REQUESTED';
+				break;
+
+			case 2:
+				return 'T_STATUS_LENT';
+				break;
+
+			case 10:
+				return 'T_STATUS_RETURNED';
+				break;
+			
+			default:
+				return '';
+				break;
+		}
+	}
+
+	public static function tStatusByKey($sKey)
+	{
+		switch ($sKey) 
+		{
+			case 'T_STATUS_REQUESTED':
+				return 1;
+				break;
+
+			case 'T_STATUS_LENT':
+				return 2;
+				break;
+
+			case 'T_STATUS_RETURNED':
+				return 10;
+				break;
+			
+			default:
+				return -1;
+				break;
+		}
 	}
 }
 

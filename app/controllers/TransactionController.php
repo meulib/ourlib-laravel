@@ -28,7 +28,7 @@ class TransactionController extends BaseController
         return Redirect::to(URL::previous());
     }
 
-    public function messages()
+    public function messages($tranID = 0)
     {
         $loggedIn = false;
         if (!Session::has('loggedInUser'))
@@ -37,10 +37,14 @@ class TransactionController extends BaseController
         $userID = Session::get('loggedInUser')->UserID;
 
         $msgTransactions = Transaction::openMsgTransactions($userID);
+        $msgs = NULL;
+        
+        if ($tranID > 0)
+            $msgs = Transaction::tMessages($tranID,$userID);
 
-        return View::make("messages",array('msgTransactions' => $msgTransactions);
+        return View::make("messages",array('msgTransactions' => $msgTransactions,'msgs' => $msgs));
         //var_dump($result);
 
-    }
+    }   
 }
 ?>
