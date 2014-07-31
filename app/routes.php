@@ -27,4 +27,6 @@ Route::get('logout', 'UserController@logout');
 
 Route::post('request', 'TransactionController@request');
 
-Route::get('/messages', 'TransactionController@messages');
+Route::post('reply', 'TransactionController@reply');
+
+Route::get('/messages/{tranID?}', 'TransactionController@messages');
