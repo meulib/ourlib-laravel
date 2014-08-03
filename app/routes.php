@@ -26,3 +26,7 @@ Route::post('login', 'UserController@login');
 Route::get('logout', 'UserController@logout');
 
 Route::post('request', 'TransactionController@request');
+
+Route::post('reply', 'TransactionController@reply');
+
+Route::get('/messages/{tranID?}', 'TransactionController@messages');
