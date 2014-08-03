@@ -81,6 +81,48 @@ class Transaction extends Eloquent {
 		return $tranID;
 	}
 
+	public static function reply($tranID, $fromUserID, $toUserID, $msg)
+	{
+		DB::beginTransaction();
+		try
+		{
+			$tranM = new TransactionMessage;
+			$tranM->TransactionID = $tranID;
+			$tranM->MessageFrom = $fromUserID;
+			$tranM->MessageTo = $toUserID;
+			$tranM->Message = $msg;
+			$tranM->save();
+
+			$msgID = $tranM->ID;
+
+			$userM = new UserMessage;
+			$userM->MsgID = $msgID;
+			$userM->UserID = $fromUserID;
+			$userM->FromTo = MESSAGE_FROM;
+			$userM->OtherUserID = $toUserID;
+			$userM->TransactionID = $tranID;
+			$userM->Message = $msg;
+			$userM->ReadFlag = 1;
+			$userM->save();
+
+			$userM = new UserMessage;
+			$userM->MsgID = $msgID;
+			$userM->UserID = $toUserID;
+			$userM->FromTo = MESSAGE_TO;
+			$userM->OtherUserID = $fromUserID;
+			$userM->TransactionID = $tranID;
+			$userM->Message = $msg;
+			$userM->save();
+		}
+		catch (Exception $e)
+		{
+			DB::rollback();
+			throw $e;
+		}				
+		DB::commit();
+		return $msgID;
+	}
+
 	public static function openMsgTransactions($userID)
 	{
 		// unread messages
