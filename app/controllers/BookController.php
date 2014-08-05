@@ -2,10 +2,21 @@
 
 class BookController extends BaseController
 {
-    public function showAll()
+    public function showAll($category=null)
     {
-    	$books = FlatBook::all();
-        return View::make('booksIndex',array('books' => $books));
+        if (is_null($category))
+        {
+        	$books = FlatBook::all();
+        }
+        if ($category == 'mine')
+        {
+            if (!Session::has('loggedInUser'))
+                return Redirect::to(URL::to('/'));
+
+            $userID = Session::get('loggedInUser')->UserID;
+            $books = FlatBook::myBooks($userID);
+        }
+        return View::make('booksIndex',array('books' => $books, 'category' => $category));
     }
 
     public function showSingle($bookId = null)

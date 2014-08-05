@@ -72,6 +72,13 @@ class TransactionController extends BaseController
            Session::put('TransactionMessage',['Reply','There was some error. Reply not sent.']);
 
         return Redirect::to(URL::previous());
-    }   
+    }
+
+    public function pendingRequests($bookCopyID=0)
+    {
+        $userID = Session::get('loggedInUser')->UserID;
+        $trans = Transaction::pendingRequests($bookCopyID,$userID);
+        return View::make("templates.lendBookForm",array('bookCopyID' => $bookCopyID,'requestTransactions' => $trans));
+    }
 }
 ?>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     @section('htmlHead')
+        {{ HTML::script('js/jquery-1.11.0.min.js'); }}
         {{ HTML::script('js/ourlib.js'); }}
     	<title>{{Config::get('app.name')}}</title>
     @show
@@ -15,7 +16,9 @@
         <a href={{URL::to('/browse')}}>Browse Collection</a> | 
         @if (Session::has('loggedInUser'))
             {{HTML::link(URL::to('/messages'), 'Messages')}}
-             | My Books | My Borrowed Books
+             | 
+            {{HTML::link(URL::to('/browse/mine'), 'My Books')}} | 
+            My Borrowed Books
         @else
             Join
         @endif

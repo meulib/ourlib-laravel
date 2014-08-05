@@ -1,8 +1,8 @@
 
 @extends('templates.base')
 
-<ul>
 @section('content')
+	<ul>
 	@foreach($books as $book)
 		{{-- var_dump($book) --}}
 		<li>
@@ -17,7 +17,20 @@
 			@endif
 			@if ($book->Author2)
 				{{{ ", ".$book->Author2 }}}
+			@endif
+			@if ($category == 'mine')
+				<br/>
+				@foreach($book->Copies as $copy)
+					{{{$copy->StatusTxt()}}} 
+					@if ($copy->StatusTxt() == 'Available')
+						<?php $onclick = "lendDiv('".$copy->ID."')"; ?>
+						{{ HTML::link('#','Lend', ['onclick'=>$onclick]); }}
+						{{"<div id='lendBook".$copy->ID."' style='display:none'></div>"}}
+					@endif
+				@endforeach
+				<br/><br/>
 			@endif	
 	@endforeach
+	</ul>
 @stop
-</ul>
+

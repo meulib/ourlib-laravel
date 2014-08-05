@@ -22,6 +22,14 @@ class Transaction extends Eloquent {
 
 	public static function request($borrowerID, $itemCopyID, $msg)
 	{
+
+		//*** TO DO ***//
+		// Consider what to do if a transaction already exists for 
+		// this borrower and this itemCopy
+		// option 1: let exception occur due to unique key violation
+		// option 2: record the new message within existing transaction
+						// if transaction status is "Requested"
+
 		$iCopy = BookCopy::findOrFail($itemCopyID);
 		$ownerID = $iCopy->UserID;
 		$itemID = $iCopy->BookID;
@@ -192,6 +200,16 @@ class Transaction extends Eloquent {
 				return -1;
 				break;
 		}
+	}
+
+	public static function pendingRequests($itemCopyID, $lenderID)
+	{
+		$trans = Transaction::where('ItemCopyID','=',$itemCopyID)
+					->where('Status','=',self::tStatusByKey('T_STATUS_REQUESTED'))
+					->where('Lender','=',$lenderID)
+					->with('BorrowerUser')
+					->get();
+		return $trans;
 	}
 }
 
