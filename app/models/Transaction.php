@@ -22,6 +22,14 @@ class Transaction extends Eloquent {
 
 	public static function request($borrowerID, $itemCopyID, $msg)
 	{
+
+		//*** TO DO ***//
+		// Consider what to do if a transaction already exists for 
+		// this borrower and this itemCopy
+		// option 1: let exception occur due to unique key violation
+		// option 2: record the new message within existing transaction
+						// if transaction status is "Requested"
+
 		$iCopy = BookCopy::findOrFail($itemCopyID);
 		$ownerID = $iCopy->UserID;
 		$itemID = $iCopy->BookID;
@@ -123,6 +131,45 @@ class Transaction extends Eloquent {
 		return $msgID;
 	}
 
+	public static function lend($lenderID, $itemCopyID, $borrowerID)
+	{
+		$itemCopy = BookCopy::where('ID','=',$itemCopyID)
+					->where('UserID','=',$lenderID)
+					->where('Status','=', BookCopy::StatusVal('Available'))
+					->first();
+
+		if (!$itemCopy)
+			throw new TransactionException('Item Not Available');
+
+		$tran = Transaction::where('Borrower','=',$borrowerID)
+					->where('itemCopyID','=',$itemCopyID)
+					->where('Status','=',self::tStatusByKey('T_STATUS_REQUESTED'))
+					->first();
+
+		DB::beginTransaction();
+		try 
+		{
+			$tran->Status = self::tStatusByKey('T_STATUS_LENT');
+			$tran->save();
+
+			$tranH = new TransactionHistory;
+			$tranH->TransactionID = $tran->ID;
+			$tranH->Status = self::tStatusByKey('T_STATUS_LENT');
+			$tranH->save();
+
+			$itemCopy->Status = BookCopy::StatusVal('Lent');
+			$itemCopy->save();
+		}
+		catch (Exception $e)
+		{
+			DB::rollback();
+			throw $e;
+		}				
+		DB::commit();
+		return $tran->ID;
+
+	}
+
 	public static function openMsgTransactions($userID)
 	{
 		// unread messages
@@ -192,6 +239,16 @@ class Transaction extends Eloquent {
 				return -1;
 				break;
 		}
+	}
+
+	public static function pendingRequests($itemCopyID, $lenderID)
+	{
+		$trans = Transaction::where('ItemCopyID','=',$itemCopyID)
+					->where('Status','=',self::tStatusByKey('T_STATUS_REQUESTED'))
+					->where('Lender','=',$lenderID)
+					->with('BorrowerUser')
+					->get();
+		return $trans;
 	}
 }
 

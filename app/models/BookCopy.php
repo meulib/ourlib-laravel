@@ -9,6 +9,43 @@ class BookCopy extends Eloquent {
 	{
 		return $this->hasOne('User', 'UserID', 'UserID');
 	}
+
+	public function Book()
+	{
+		return $this->hasOne('FlatBook', 'ID', 'BookID');
+	}
+
+	public function StatusTxt()
+	{
+		switch ($this->Status) 
+		{
+			case 1:
+				return 'Available';
+				break;
+		
+			default:
+				return '';
+				break;
+		}
+	}
+
+	public static function StatusVal($val)
+	{
+		switch ($val) 
+		{
+			case 'Available':
+				return 1;
+				break;
+
+			case 'Lent':
+				return 2;
+				break;
+		
+			default:
+				return -1;
+				break;
+		}
+	}
 }
 
 ?>

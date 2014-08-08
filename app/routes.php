@@ -17,7 +17,7 @@ Route::get('/', function()
 	return View::make('home');
 });
 
-Route::get('/browse', 'BookController@showAll');
+Route::get('/browse/{category?}', 'BookController@showAll');
 
 Route::get('/book/{id?}', 'BookController@showSingle');
 
@@ -28,5 +28,9 @@ Route::get('logout', 'UserController@logout');
 Route::post('request', 'TransactionController@request');
 
 Route::post('reply', 'TransactionController@reply');
+
+Route::post('pendingRequests', 'TransactionController@pendingRequests');
+
+Route::post('lend', 'TransactionController@lend');
 
 Route::get('/messages/{tranID?}', 'TransactionController@messages');
