@@ -131,6 +131,45 @@ class Transaction extends Eloquent {
 		return $msgID;
 	}
 
+	public static function lend($lenderID, $itemCopyID, $borrowerID)
+	{
+		$itemCopy = BookCopy::where('ID','=',$itemCopyID)
+					->where('UserID','=',$lenderID)
+					->where('Status','=', BookCopy::StatusVal('Available'))
+					->first();
+
+		if (!$itemCopy)
+			throw new TransactionException('Item Not Available');
+
+		$tran = Transaction::where('Borrower','=',$borrowerID)
+					->where('itemCopyID','=',$itemCopyID)
+					->where('Status','=',self::tStatusByKey('T_STATUS_REQUESTED'))
+					->first();
+
+		DB::beginTransaction();
+		try 
+		{
+			$tran->Status = self::tStatusByKey('T_STATUS_LENT');
+			$tran->save();
+
+			$tranH = new TransactionHistory;
+			$tranH->TransactionID = $tran->ID;
+			$tranH->Status = self::tStatusByKey('T_STATUS_LENT');
+			$tranH->save();
+
+			$itemCopy->Status = BookCopy::StatusVal('Lent');
+			$itemCopy->save();
+		}
+		catch (Exception $e)
+		{
+			DB::rollback();
+			throw $e;
+		}				
+		DB::commit();
+		return $tran->ID;
+
+	}
+
 	public static function openMsgTransactions($userID)
 	{
 		// unread messages

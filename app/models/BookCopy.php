@@ -28,6 +28,24 @@ class BookCopy extends Eloquent {
 				break;
 		}
 	}
+
+	public static function StatusVal($val)
+	{
+		switch ($val) 
+		{
+			case 'Available':
+				return 1;
+				break;
+
+			case 'Lent':
+				return 2;
+				break;
+		
+			default:
+				return -1;
+				break;
+		}
+	}
 }
 
 ?>

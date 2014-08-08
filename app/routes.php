@@ -29,6 +29,8 @@ Route::post('request', 'TransactionController@request');
 
 Route::post('reply', 'TransactionController@reply');
 
-Route::get('pendingRequests/{bookCopyID?}', 'TransactionController@pendingRequests');
+Route::post('pendingRequests', 'TransactionController@pendingRequests');
+
+Route::post('lend', 'TransactionController@lend');
 
 Route::get('/messages/{tranID?}', 'TransactionController@messages');

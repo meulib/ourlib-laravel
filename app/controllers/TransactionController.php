@@ -48,7 +48,7 @@ class TransactionController extends BaseController
 
     public function reply()
     {
-        $loggedIn = false;
+        
         if (!Session::has('loggedInUser'))
             return Redirect::to(URL::to('/'));
 
@@ -74,11 +74,44 @@ class TransactionController extends BaseController
         return Redirect::to(URL::previous());
     }
 
-    public function pendingRequests($bookCopyID=0)
+    public function pendingRequests()
     {
+        //return "abc";
+
+        if (!Session::has('loggedInUser'))
+            return "";
+
+        $bookCopyID = Input::get('bookCopyID');
         $userID = Session::get('loggedInUser')->UserID;
         $trans = Transaction::pendingRequests($bookCopyID,$userID);
         return View::make("templates.lendBookForm",array('bookCopyID' => $bookCopyID,'requestTransactions' => $trans));
+    }
+
+    public function lend()
+    {
+        if (!Session::has('loggedInUser'))
+            return Redirect::to(URL::to('/'));
+
+        $userID = Session::get('loggedInUser')->UserID;
+        $bookCopyID = Input::get('bookCopyID');
+        $borrowerID = Input::get('lendToID');
+        $tranID = 0;
+
+        try
+        {
+            $tranID = Transaction::lend($userID,$bookCopyID,$borrowerID);
+        }
+        catch (Exception $e)
+        {
+            Session::put('TransactionMessage',['LendBook','There was some error. Book lending not recorded.'.$e->getMessage()]);
+        }        
+
+        if ($tranID > 0)
+            Session::put('TransactionMessage',['LendBook','Book Lent.']);
+        else
+           Session::put('TransactionMessage',['LendBook','There was some error. Book lending not recorded.'.$e->getMessage()]);
+
+        return Redirect::to(URL::previous());
     }
 }
 ?>
