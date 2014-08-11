@@ -10,7 +10,7 @@ function showDiv(divid)
 	shownDiv = divid;
 }
 
-function lendDiv(id,callURL)
+function showDivBookCopy(id,callURL)
 {
   if (shownDiv != "")
     document.getElementById(shownDiv).style.display = "none";
@@ -22,7 +22,7 @@ function lendDiv(id,callURL)
          dataType: "html",
          success: function(result) 
          {
-            shownDiv = "lendBook"+id
+            shownDiv = "showDiv2"+id
             var div = document.getElementById(shownDiv);
             div.innerHTML = result;
   //			    div.innerHTML = 'abc';
@@ -30,7 +30,7 @@ function lendDiv(id,callURL)
          },
          error: function( xhr, status )
          {
-            alert( "Sorry, there was a problem!" );
+            alert( "Sorry, there was a problem! " +status );
          },
          async:   false
   });

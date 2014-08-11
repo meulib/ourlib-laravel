@@ -31,6 +31,10 @@ Route::post('reply', 'TransactionController@reply');
 
 Route::post('pendingRequests', 'TransactionController@pendingRequests');
 
+Route::post('returnForm', 'TransactionController@returnForm');
+
 Route::post('lend', 'TransactionController@lend');
+
+Route::post('acceptReturn', 'TransactionController@acceptReturn');
 
 Route::get('/messages/{tranID?}', 'TransactionController@messages');
