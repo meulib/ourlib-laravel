@@ -35,19 +35,21 @@
 		@if ($book->Author2)
 			{{{ ", ".$book->Author2 }}}
 		@endif
-		@if ($category == 'mine')
+		@if (($category == 'mine') || ($category == 'borrowed'))
 			<br/>
 			@foreach($book->Copies as $copy)
 				{{{$copy->StatusTxt()}}} 
-				@if ($copy->StatusTxt() == 'Available')
-					<?php $onclick = "showDivBookCopy('".$copy->ID."','".$pendingReqURL."')"; ?>
-					{{ HTML::link('#','Lend', ['onclick'=>$onclick]); }}
-					{{"<div id='showDiv2".$copy->ID."' style='display:none'></div>"}}
-				@endif
-				@if ($copy->StatusTxt() == 'Lent Out')
-					<?php $onclick = "showDivBookCopy('".$copy->ID."','".$returnForm."')"; ?>
-					{{ HTML::link('#','Accept Return', ['onclick'=>$onclick]); }}
-					{{"<div id='showDiv2".$copy->ID."' style='display:none'></div>"}}
+				@if ($category == 'mine')
+					@if ($copy->StatusTxt() == 'Available')
+						<?php $onclick = "showDivBookCopy('".$copy->ID."','".$pendingReqURL."')"; ?>
+						{{ HTML::link('#','Lend', ['onclick'=>$onclick]); }}
+						{{"<div id='showDiv2".$copy->ID."' style='display:none'></div>"}}
+					@endif
+					@if ($copy->StatusTxt() == 'Lent Out')
+						<?php $onclick = "showDivBookCopy('".$copy->ID."','".$returnForm."')"; ?>
+						{{ HTML::link('#','Accept Return', ['onclick'=>$onclick]); }}
+						{{"<div id='showDiv2".$copy->ID."' style='display:none'></div>"}}
+					@endif
 				@endif
 			@endforeach
 			<br/><br/>

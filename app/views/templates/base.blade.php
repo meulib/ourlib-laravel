@@ -18,7 +18,7 @@
             {{HTML::link(URL::to('/messages'), 'Messages')}}
              | 
             {{HTML::link(URL::to('/browse/mine'), 'My Books')}} | 
-            My Borrowed Books
+            {{HTML::link(URL::to('/browse/borrowed'), 'My Borrowed Books')}}
         @else
             Join
         @endif
