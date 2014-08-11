@@ -23,6 +23,20 @@ class FlatBook extends Eloquent {
 		return $books;
 	}
 
+	public static function myBorrowedBooks($borrowerID)
+	{
+		$booksIDs = DB::table('transactions_active')
+						->select('ItemID')
+						->distinct()
+						->where('Borrower','=',$borrowerID)
+						->where('Status','=',Transaction::tStatusByKey('T_STATUS_LENT'))
+						->lists('ItemID');
+		$books = FlatBook::whereIn('ID',$booksIDs)
+					->with('Copies')
+					->get();
+		return $books;
+	}
+
 }
 
 ?>

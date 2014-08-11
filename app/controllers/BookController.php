@@ -16,6 +16,14 @@ class BookController extends BaseController
             $userID = Session::get('loggedInUser')->UserID;
             $books = FlatBook::myBooks($userID);
         }
+        if ($category == 'borrowed')
+        {
+            if (!Session::has('loggedInUser'))
+                return Redirect::to(URL::to('/'));
+
+            $borrowerID = Session::get('loggedInUser')->UserID;
+            $books = FlatBook::myBorrowedBooks($borrowerID);
+        }
         return View::make('booksIndex',array('books' => $books, 'category' => $category));
     }
 
