@@ -3,11 +3,12 @@
 
 <?php
 	$pendingReqURL = URL::to('pendingRequests');
+	$returnForm = URL::to('returnForm');
 	$tMsg = ["",""];
 	if (Session::has('TransactionMessage'))
 	{
 		$tMsg = Session::get('TransactionMessage');
-		if ($tMsg[0] == 'LendBook')
+		if (($tMsg[0] == 'LendBook') || ($tMsg[0] == 'ReturnBook'))
 		{
 			Session::forget('TransactionMessage');	
 		}
@@ -39,9 +40,14 @@
 			@foreach($book->Copies as $copy)
 				{{{$copy->StatusTxt()}}} 
 				@if ($copy->StatusTxt() == 'Available')
-					<?php $onclick = "lendDiv('".$copy->ID."','".$pendingReqURL."')"; ?>
+					<?php $onclick = "showDivBookCopy('".$copy->ID."','".$pendingReqURL."')"; ?>
 					{{ HTML::link('#','Lend', ['onclick'=>$onclick]); }}
-					{{"<div id='lendBook".$copy->ID."' style='display:none'></div>"}}
+					{{"<div id='showDiv2".$copy->ID."' style='display:none'></div>"}}
+				@endif
+				@if ($copy->StatusTxt() == 'Lent Out')
+					<?php $onclick = "showDivBookCopy('".$copy->ID."','".$returnForm."')"; ?>
+					{{ HTML::link('#','Accept Return', ['onclick'=>$onclick]); }}
+					{{"<div id='showDiv2".$copy->ID."' style='display:none'></div>"}}
 				@endif
 			@endforeach
 			<br/><br/>
@@ -49,4 +55,3 @@
 @endforeach
 </ul>
 @stop
-

@@ -146,6 +146,9 @@ class Transaction extends Eloquent {
 					->where('Status','=',self::tStatusByKey('T_STATUS_REQUESTED'))
 					->first();
 
+		if (!$tran)
+			throw new TransactionException('TransactionID Not Found');
+
 		DB::beginTransaction();
 		try 
 		{
@@ -157,7 +160,7 @@ class Transaction extends Eloquent {
 			$tranH->Status = self::tStatusByKey('T_STATUS_LENT');
 			$tranH->save();
 
-			$itemCopy->Status = BookCopy::StatusVal('Lent');
+			$itemCopy->Status = BookCopy::StatusVal('Lent Out');
 			$itemCopy->save();
 		}
 		catch (Exception $e)
@@ -168,6 +171,52 @@ class Transaction extends Eloquent {
 		DB::commit();
 		return $tran->ID;
 
+	}
+
+	public static function returnItem($lenderID, $itemCopyID, $borrowerID)
+	{
+		$itemCopy = BookCopy::where('ID','=',$itemCopyID)
+					->where('UserID','=',$lenderID)
+					->where('Status','=', BookCopy::StatusVal('Lent Out'))
+					->first();
+
+		if (!$itemCopy)
+		{
+			//$ql = DB::getQueryLog();
+			//$q = serialize($ql);
+			throw new TransactionException('Item Not Available');
+		}
+
+		$tran = Transaction::where('Borrower','=',$borrowerID)
+					->where('itemCopyID','=',$itemCopyID)
+					->where('Status','=',self::tStatusByKey('T_STATUS_LENT'))
+					->first();
+
+		if (!$tran)
+			throw new TransactionException('TransactionID Not Found');
+
+		DB::beginTransaction();
+		try 
+		{
+			$tran->Status = self::tStatusByKey('T_STATUS_RETURNED');
+			$tran->save();
+			// TO DO: active transaction should be removed actually
+
+			$tranH = new TransactionHistory;
+			$tranH->TransactionID = $tran->ID;
+			$tranH->Status = self::tStatusByKey('T_STATUS_RETURNED');
+			$tranH->save();
+
+			$itemCopy->Status = BookCopy::StatusVal('Available');
+			$itemCopy->save();
+		}
+		catch (Exception $e)
+		{
+			DB::rollback();
+			throw $e;
+		}				
+		DB::commit();
+		return $tran->ID;
 	}
 
 	public static function openMsgTransactions($userID)
@@ -249,6 +298,18 @@ class Transaction extends Eloquent {
 					->with('BorrowerUser')
 					->get();
 		return $trans;
+	}
+
+	public static function borrowerByItemCopy($itemCopyID, $ownerID)
+	{
+		$tran = Transaction::where('ItemCopyID','=',$itemCopyID)
+					->where('Lender','=',$ownerID)
+					->where('Status','=',self::tStatusByKey('T_STATUS_LENT'))
+					->with('BorrowerUser')
+					->first();
+		return $tran;
+		/*$q = DB::getQueryLog();
+		return $q;*/
 	}
 }
 

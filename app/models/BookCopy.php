@@ -22,6 +22,10 @@ class BookCopy extends Eloquent {
 			case 1:
 				return 'Available';
 				break;
+
+			case 2:
+				return 'Lent Out';
+				break;
 		
 			default:
 				return '';
@@ -37,7 +41,7 @@ class BookCopy extends Eloquent {
 				return 1;
 				break;
 
-			case 'Lent':
+			case 'Lent Out':
 				return 2;
 				break;
 		
