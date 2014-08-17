@@ -2,44 +2,49 @@
 
 @section('content')
 <!-- TO DO: break this form into several pages/tabs with heading so that it is easier for user. Form does not feel too long. -->
-{{ Form::open() }}
+{{ Form::open(array('action' => 'UserController@submitSignup')) }}
+<ul class="errors">
+@foreach($errors->all() as $message)
+    <li>{{ $message }}</li>
+@endforeach
+</ul>
 	<table>
 		<tr>
 			<td>{{ Form::label('l_email', 'Email'); }}</td>
-			<td>{{ Form::text('f_email', '', ['required']) }}<br/></td>
+			<td>{{ Form::email('email', '', ['required']) }}<br/></td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_email1', 'Re-enter Email'); }}</td>
-			<td>{{ Form::text('f_email1', '', ['required']) }}<br/></td>
+			<td>{{ Form::email('email_confirmation', '', ['required']) }}<br/></td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_name', 'Name'); }}</td>
-			<td>{{ Form::text('f_name', '', ['required']) }}<br/></td>
+			<td>{{ Form::text('name', '', ['required']) }}<br/></td>
 		</tr>
 		<tr>
 			<td style="vertical-align: top;">
 				{{ Form::label('l_addr', 'Address'); }}
 			</td>
-		    <td>{{ Form::textarea('msg', '', ['size' => '20x3','required']) }}
+		    <td>{{ Form::textarea('address', '', ['size' => '20x3','required']) }}
 		    </td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_locality', 'Locality'); }}</td>
-			<td>{{ Form::text('f_locality', '') }}</td>
+			<td>{{ Form::text('locality', '') }}</td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_city', 'City'); }}</td>
-			<td>{{ Form::select('f_city', ['Manipal', 'Udupi'],['required']) }}
+			<td>{{ Form::select('city', ['Manipal', 'Udupi'],['required']) }}
 			</td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_state', 'State'); }}</td>
-			<td>{{ Form::select('f_state', ['Karnataka'],['required']) }}
+			<td>{{ Form::select('state', ['Karnataka'],['required']) }}
 			</td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_phone', 'Phone number (mobile preferred)'); }}</td>
-			<td>{{ Form::text('f_phone', '', ['required']) }}<br/></td>
+			<td>{{ Form::text('phone', '') }}<br/></td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
@@ -48,19 +53,19 @@
 		<tr>
 			<td>{{ Form::label('l_username', 'Username'); }}</td>
 			<td>
-			{{ Form::text('f_username', '', ['required','pattern' => '[a-zA-Z0-9]{2,64}']) }}<br/>
+			{{ Form::text('username', '', ['required','pattern' => '[a-zA-Z0-9]{2,64}']) }}<br/>
 			</td>
 		</tr>
 		<tr>
 			<td>{{ Form::label('l_pwd', 'Password'); }}</td>
 			<td>
-			{{ Form::text('f_pwd', '', ['required','pattern' => '.{6,}', 'autocomplete' => 'off']) }}<br/>
+			{{ Form::password('password', '', ['required', 'autocomplete' => 'off']) }}<br/>
 			</td>
 		</tr>
 		<tr>
-			<td>{{ Form::label('l_pwd1', 'Re-enter Password'); }}</td>
+			<td>{{ Form::label('pwd1', 'Re-enter Password'); }}</td>
 			<td>
-			{{ Form::text('f_pwd1', '', ['required','pattern' => '.{6,}', 'autocomplete' => 'off']) }}<br/>
+			{{ Form::password('password_confirmation', '', ['required', 'autocomplete' => 'off']) }}<br/>
 			</td>
 		</tr>
 		<tr>

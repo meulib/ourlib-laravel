@@ -23,6 +23,8 @@ Route::get('book/{id?}', 'BookController@showSingle');
 
 Route::get('signup', 'UserController@signup');
 
+Route::post('submitSignup', 'UserController@submitSignup');
+
 Route::get('showCaptcha', 'UtilityController@showCaptcha');
 
 Route::post('login', 'UserController@login');
