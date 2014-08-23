@@ -21,9 +21,11 @@ Route::get('browse/{category?}', 'BookController@showAll');
 
 Route::get('book/{id?}', 'BookController@showSingle');
 
-Route::get('signup', 'UserController@signup');
+Route::get('account/create', 'UserController@signup');
 
-Route::post('submitSignup', 'UserController@submitSignup');
+Route::post('account/submit', 'UserController@submitSignup');
+
+Route::get('account/activate/{id?}/{verification_code?}', 'UserController@signup');
 
 Route::get('showCaptcha', 'UtilityController@showCaptcha');
 

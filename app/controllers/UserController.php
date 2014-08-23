@@ -2,6 +2,20 @@
 
 //require_once('MyExceptions.php');
 
+Validator::extend('captcha', function($field, $value, $params)
+{
+    if (Session::has('captcha'))
+    {
+        $generatedCaptcha = Session::pull('captcha');
+        if (strtoupper($value) == strtoupper($generatedCaptcha))
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
+});
+
 class UserController extends BaseController
 {
 
@@ -40,16 +54,6 @@ class UserController extends BaseController
 
     public function submitSignup()
     {
-        $captcha = Input::get('f_captcha');
-        
-        if (Session::has('captcha'))
-        {
-            $generatedCaptcha = Session::pull('captcha');
-            if ($generatedCaptcha != $captcha)
-                Session::push('RegisterError','Captcha text does not match');
-        }
-        else
-            Session::push('RegisterError','Captcha error');
 
         $data = Input::all();
 
@@ -59,18 +63,26 @@ class UserController extends BaseController
             'address' => 'required',
             'city' => 'required',
             'state' => 'required',
+            'phone' => 'integer',
             'username' => 'required|alpha_num|between:2,64|unique:user_access,Username',
-            'password' => 'required|confirmed|min:6'
+            'password' => 'required|confirmed|min:6',
+            'captcha' => 'captcha'
         );
         
-        $validator = Validator::make($data, $rules);
+        $messages = array(
+            'integer' => 'The :attribute must be number digits only.',
+            'captcha' => 'Entered :attribute characters do not match the generated image.'
+        );
+
+        $validator = Validator::make($data, $rules, $messages);
 
         if ($validator->fails()) 
         {
             return Redirect::to(URL::previous())->withErrors($validator);
         }
 
-        return "Data was saved.";
+        $result = UserAccess::addNew($data);
+        return var_dump($result);
     }
 }
 ?>

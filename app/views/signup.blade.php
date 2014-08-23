@@ -18,7 +18,7 @@
 			<td>{{ Form::email('email_confirmation', '', ['required']) }}<br/></td>
 		</tr>
 		<tr>
-			<td>{{ Form::label('l_name', 'Name'); }}</td>
+			<td>{{ Form::label('l_name', 'Full Name'); }}</td>
 			<td>{{ Form::text('name', '', ['required']) }}<br/></td>
 		</tr>
 		<tr>
@@ -43,8 +43,10 @@
 			</td>
 		</tr>
 		<tr>
-			<td>{{ Form::label('l_phone', 'Phone number (mobile preferred)'); }}</td>
-			<td>{{ Form::text('phone', '') }}<br/></td>
+			<td>{{ Form::label('l_phone', 'Phone number'); }}<br/>
+				(mobile preferred,<br/>
+				landline with STD)</td>
+			<td valign="top">{{ Form::text('phone', '') }}<br/></td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
@@ -69,7 +71,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td></td>
+			<td valign="top"></td>
 			<td>
 				{{ HTML::image(URL::to('showCaptcha')) }}<br/>
       			<label>Please enter these characters</label><br/>

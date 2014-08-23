@@ -32,14 +32,6 @@ class UserAccess extends Eloquent {
 	protected $table = 'user_access';
 	protected $primaryKey = 'UserID';
 
-	private function failedLogin()
-	{
-		//$sql = "UPDATE ".TBL_PREFIX."user_access SET FailedLogins = FailedLogins+1, "
-		//	. "LastFailedLogin = :failedLoginTime WHERE UserID = :userid";
-        //$this->dbconn->execute($sql,array('userid' => $userid, 
-        //	':failedLoginTime' => time()),true);
-	}
-
 	public static function Login($userNameEmail, $pwd)
 	{
 		$user = NULL;
@@ -79,6 +71,79 @@ class UserAccess extends Eloquent {
         $user->LastFailedLogin = NULL;
         $user->save();
         return $user->UserID;
+	}
+
+	private static function generateUserID()
+	{
+		$found = false;
+		$an = "";
+		while (!$found)
+		{
+			$a = chr(rand(1,26)+64).chr(rand(1,26)+64).chr(rand(1,26)+64).chr(rand(1,26)+64);
+			$n = mt_rand()*2;
+			$an = $a.$n;
+			$result = self::where('UserID','=',$an)->count();
+			if ($result==0)
+				$found = true;
+		}
+		return $an;
+	}
+
+	public static function addNew($data)
+	{
+		$userID = self::generateUserID();
+		$pwd = $data['password'];
+		$cryptPwd = crypt($pwd,'$5$'.substr(md5(uniqid(rand(),true)),0,13));
+		$activationHash = sha1(uniqid(mt_rand(), true));
+
+		DB::beginTransaction();
+
+		try 
+		{
+			$userA = new UserAccess;
+			$userA->UserID = $userID;
+			$userA->Username = $data['username'];
+			$userA->EMail = $data['email'];
+			$userA->Pwd = $cryptPwd;
+			$userA->ActivationHash = $activationHash;
+			$userA->RegistrationIP = $_SERVER['REMOTE_ADDR'];
+			$userA->save();
+
+			$user = new User;
+			$user->UserId = $userID;
+			$user->FullName = $data['name'];
+			$user->Address = $data['address'];
+			$user->Locality = $data['locality'];
+			$user->City = $data['city'];
+			$user->State = $data['state'];
+			$user->EMail = $data['email'];
+			$user->PhoneNumber = $data['phone'];
+			$user->save();
+		}
+		catch (Exception $e)
+		{
+			DB::rollback();
+			throw $e;
+		}				
+		DB::commit();
+
+		$emailData = array('name'=>$data['name']);
+		$emailData['id'] = $userID;
+		$emailData['verificationCode'] = $activationHash;
+
+		try
+		{
+			Mail::send('emails.auth.newUEmailVerify',$emailData, function($message) use ($data)
+			{
+				$message->to($data['email'], $data['name'])
+						->subject('Account Activation');
+			});
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+		return $true;
 	}
 }
 
