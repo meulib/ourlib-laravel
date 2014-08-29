@@ -52,6 +52,17 @@ class UserController extends BaseController
         return View::make('signup');
     }
 
+    public function activate($id = null, $verification_code = null)
+    {
+        //$id = Input::get('id');
+        //$aHash = Input::get('verification_code');
+        $result = UserAccess::verifyUserEmail($id,$verification_code);
+        if ($result)
+            return View::make('accountActivated');
+        else
+            return var_dump($result);
+    }
+
     public function submitSignup()
     {
 
@@ -82,7 +93,10 @@ class UserController extends BaseController
         }
 
         $result = UserAccess::addNew($data);
-        return var_dump($result);
+        if ($result)
+            return View::make('signupSubmit');
+        else
+            return var_dump($result);
     }
 }
 ?>

@@ -25,7 +25,7 @@ Route::get('account/create', 'UserController@signup');
 
 Route::post('account/submit', 'UserController@submitSignup');
 
-Route::get('account/activate/{id?}/{verification_code?}', 'UserController@signup');
+Route::get('account/activate/{id?}/{verification_code?}', 'UserController@activate');
 
 Route::get('showCaptcha', 'UtilityController@showCaptcha');
 

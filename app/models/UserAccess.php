@@ -30,6 +30,7 @@
 class UserAccess extends Eloquent {
 
 	protected $table = 'user_access';
+	public $incrementing = false;
 	protected $primaryKey = 'UserID';
 
 	public static function Login($userNameEmail, $pwd)
@@ -143,7 +144,31 @@ class UserAccess extends Eloquent {
 		{
 			return false;
 		}
-		return $true;
+		return true;
+	}
+
+	public static function verifyUserEmail($userid, $activationHash)
+	{
+		$user = NULL;
+		$user = self::where('UserID','=',$userid)
+						->where('ActivationHash','=',$activationHash)
+						->first();
+
+		if ($user == NULL)
+			return false;
+		$user->Active = 1;
+		$user->ActivationHash = NULL;
+		$result = $user->save();
+
+		$body = array('body'=>'New User Activated ' . $userid);
+
+		Mail::send(array('text' => 'emails.raw'), $body, function($message)
+		{
+			$message->to(Config::get('mail.admin'))
+					->subject('New ' . Config::get('app.name') . ' User');
+		});
+
+		return $result;
 	}
 }
 
