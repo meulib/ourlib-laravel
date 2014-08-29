@@ -20,7 +20,7 @@
             {{HTML::link(URL::to('/browse/mine'), 'My Books')}} | 
             {{HTML::link(URL::to('/browse/borrowed'), 'My Borrowed Books')}}
         @else
-            Join
+            {{HTML::link(URL::to('account/create'), 'Join')}}
         @endif
         <br/><br/>
     @show

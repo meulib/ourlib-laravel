@@ -17,9 +17,17 @@ Route::get('/', function()
 	return View::make('home');
 });
 
-Route::get('/browse/{category?}', 'BookController@showAll');
+Route::get('browse/{category?}', 'BookController@showAll');
 
-Route::get('/book/{id?}', 'BookController@showSingle');
+Route::get('book/{id?}', 'BookController@showSingle');
+
+Route::get('account/create', 'UserController@signup');
+
+Route::post('account/submit', 'UserController@submitSignup');
+
+Route::get('account/activate/{id?}/{verification_code?}', 'UserController@activate');
+
+Route::get('showCaptcha', 'UtilityController@showCaptcha');
 
 Route::post('login', 'UserController@login');
 

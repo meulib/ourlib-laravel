@@ -2,28 +2,22 @@
 
 //require_once('MyExceptions.php');
 
+Validator::extend('captcha', function($field, $value, $params)
+{
+    if (Session::has('captcha'))
+    {
+        $generatedCaptcha = Session::pull('captcha');
+        if (strtoupper($value) == strtoupper($generatedCaptcha))
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
+});
+
 class UserController extends BaseController
 {
-    /* public function showAll()
-    {
-    	$books = FlatBook::all();
-        return View::make('booksIndex',array('books' => $books));
-    } */
-
-    /* public function showSingle($bookId = null)
-    {
-        //return View::make('single');
-        if ($bookId == null)
-        {
-        	return Redirect::to(URL::previous());
-        }
-        else
-        {
-            $book = FlatBook::find($bookId);
-            $copies = BookCopy::where('BookID', '=', $book->ID)->get();
-            return View::make("book",array('book' => $book, 'copies' => $copies));
-	    }
-    } */
 
     public function login()
     {
@@ -51,6 +45,58 @@ class UserController extends BaseController
     {
         Session::flush();
         return Redirect::to(URL::previous());
+    }
+
+    public function signup()
+    {
+        return View::make('signup');
+    }
+
+    public function activate($id = null, $verification_code = null)
+    {
+        //$id = Input::get('id');
+        //$aHash = Input::get('verification_code');
+        $result = UserAccess::verifyUserEmail($id,$verification_code);
+        if ($result)
+            return View::make('accountActivated');
+        else
+            return var_dump($result);
+    }
+
+    public function submitSignup()
+    {
+
+        $data = Input::all();
+
+        $rules = array(
+            'email' => 'required|email|confirmed|max:100|unique:user_access,EMail',
+            'name' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'phone' => 'integer',
+            'username' => 'required|alpha_num|between:2,64|unique:user_access,Username',
+            'password' => 'required|confirmed|min:6',
+            'captcha' => 'captcha'
+        );
+        
+        $messages = array(
+            'integer' => 'The :attribute must be number digits only.',
+            'captcha' => 'Entered :attribute characters do not match the generated image.'
+        );
+
+        $validator = Validator::make($data, $rules, $messages);
+
+        if ($validator->fails()) 
+        {
+            return Redirect::to(URL::previous())->withErrors($validator);
+        }
+
+        $result = UserAccess::addNew($data);
+        if ($result)
+            return View::make('signupSubmit');
+        else
+            return var_dump($result);
     }
 }
 ?>
